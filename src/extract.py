@@ -1,20 +1,13 @@
 import os
-
-import pandas as pd
+import json
+from datetime import datetime
 import requests
+from dotenv import load_dotenv
 
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
-
+load_dotenv()
 TELRAAM_API_KEY = os.getenv("TELRAAM_API_KEY")
-if not TELRAAM_API_KEY:
-    raise RuntimeError("TELRAAM_API_KEY is not set in the environment")
 
 url = "https://telraam-api.net/v1/reports/traffic"
-
 body = {
     "id": "9000001463",
     "time_start": "2025-10-25 00:00:00Z",
@@ -22,10 +15,15 @@ body = {
     "level": "segments",
     "format": "per-hour"
 }
-
 headers = {"X-Api-Key": TELRAAM_API_KEY}
+
 response = requests.post(url, headers=headers, json=body)
 response.raise_for_status()
-response_json = response.json()
-dataframe = pd.DataFrame(response_json["report"])
-dataframe.to_csv("test.csv")
+data = response.json()
+
+os.makedirs("raw", exist_ok=True)
+filename = f"raw/telraam_{datetime.now():%Y%m%d_%H%M%S}.json"
+with open(filename, "w") as f:
+    json.dump(data, f)
+
+print(f"Saved {len(data['report'])} records to {filename}")
