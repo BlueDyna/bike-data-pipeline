@@ -1,9 +1,10 @@
 import json
 import glob
+import os
 import pandas as pd
 
 # ==========================
-# JSON-bestanden inladen
+# Meest recente JSON-bestand zoeken
 # ==========================
 
 files = glob.glob("raw/telraam_*.json")
@@ -11,16 +12,21 @@ files = glob.glob("raw/telraam_*.json")
 if not files:
     raise FileNotFoundError("Geen bestanden gevonden in de map 'raw/'.")
 
-all_records = []
+latest_file = max(files, key=os.path.getmtime)
 
-for filepath in files:
-    with open(filepath, "r", encoding="utf-8") as f:
-        data = json.load(f)
+print(f"Meest recente bestand: {latest_file}")
 
-    if "report" in data:
-        all_records.extend(data["report"])
+# ==========================
+# JSON-bestand inladen
+# ==========================
 
-df = pd.DataFrame(all_records)
+with open(latest_file, "r", encoding="utf-8") as f:
+    data = json.load(f)
+
+if "report" not in data:
+    raise ValueError("Geen 'report'-veld gevonden in het JSON-bestand.")
+
+df = pd.DataFrame(data["report"])
 
 print(f"{len(df)} records ingelezen.")
 
