@@ -7,13 +7,12 @@ Een ETL-pipeline die fietsgegevens verzamelt, transformeert en opslaat voor verd
 - Data extractie uit de bron
 - Data cleaning en transformatie
 - Laden van de data in een database
-- Logging en foutafhandeling (indien aanwezig)
+- foutafhandeling
 
 ## Tech Stack
 - Python
-- Pandas
-- PostgreSQL (of SQLite)
-- Docker (indien gebruikt)
+- PostgreSQL
+- Telraam API
 
 ## Projectstructuur
 
